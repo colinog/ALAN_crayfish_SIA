@@ -1,3 +1,10 @@
+################################################################
+# Setup script for the manuscript:
+# Effects of artificial light at night and invasive crayfish in 
+# linked aquatic-terrestrial ecosystems
+################################################################
+
+# Load libraries required ----------------------------------------------------------
 library(tidyverse)
 library(Hmisc)
 library(ggstance)
@@ -8,6 +15,8 @@ library(ggthemes)
 library(ggh4x)
 library(ggtext)
 library(patchwork)
+library(bayestestR)
+library(ggplotify)
 
 # to install tRophicPosition (currently not possible via CRAN)
 #install.packages("devtools")
