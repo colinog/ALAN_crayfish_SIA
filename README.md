@@ -11,8 +11,7 @@ The code folder include the main scripts and should be run in the following orde
 2. `01_SIA_model_visualization.R` – Prepare the data, runs the Bayesian mixing models and produces visualization 
 
 Additional script are included for niche width estimation, plotting and summarizing results
-including other code and output for emergence models and visualization, macroinvertebrate,
-environmental parameter, and light intensity visualization.
+including other code and output for emergence models and visualization, macroinvertebrate, environmental parameter, and light intensity visualization.
 
 
 **Folder Structure **
@@ -28,8 +27,7 @@ Contains input and supporting datasets:
 - Mixture data for spider and crayfish
 - Source data for spider and crayfish
 - Trophic enrichment factor data for spider and crayfish
-- Other data_output subfolder: Aquatic insect emergence, macroinvertebrate community,
-  environmental parameter, and light intensity data (.rds) and output with generated plots 
+- Other data_output subfolder: Aquatic insect emergence, macroinvertebrate community, environmental parameter, and light intensity data (.rds) and output with generated plots 
 
 `Output/`
 - Spider polygon and diet proportion plots
