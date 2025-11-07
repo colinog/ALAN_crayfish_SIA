@@ -1,10 +1,12 @@
 This repository contains the code and data used in the manuscript: 
+
 _"Effects of artificial light at night and invasive crayfish in linked aquatic-terrestrial ecosystems"_
 
 The repository include R function and visualization scripts adapted from MixSIAR and SIBER packages for
 Bayesian mixing models and isotopic niche width estimation using carbon and nitrogen stable isotope data.
 
 **Code description**
+
 The code folder include the main scripts and should be run in the following order:
 
 1. `00_Septup.R` - Initialize the environment, loads required packages, and run the function
@@ -17,6 +19,7 @@ including other code and output for emergence models and visualization, macroinv
 **Folder Structure **
 
 `Code/`
+
 Contains:
 - Setup and model scripts
 - Niche widht estimation and visualization code
