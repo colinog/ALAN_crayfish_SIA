@@ -9,7 +9,7 @@ library(tidyverse)
 library(Hmisc)
 library(ggstance)
 library(MixSIAR)
-library(tRophicPosition)
+#library(tRophicPosition)
 library(SIBER)
 library(ggthemes)
 library(ggh4x)
@@ -28,10 +28,7 @@ library(ggplotify)
    Cicadellidae = "#3E9C94",
    Curculionidae = "#7A9E24")
  
-
-
-
-
+########Define colors and themes ----------------------------------------------------------
 col_hab = c(
   Chironomidae = "#56B1F7",
   Tanypodinae = "#56B1F7",

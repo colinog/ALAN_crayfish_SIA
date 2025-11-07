@@ -104,18 +104,18 @@ ggsave(
 )
 
 ##### Run MixSIAR for spider --------
-# set.seed(123)
-# spider_models <-
-#   unique(mixture_spider$Treatment) %>%
-#   purrr::map(function(x) {
-#     run_spider_model(
-#       run = "long",
-#       treatment = x,
-#       mix = mixture_spider,
-#       src = source_spider,
-#       discr = TEF_spider
-#     )
-#   })
+set.seed(123)
+spider_models <-
+  unique(mixture_spider$Treatment) %>%
+  purrr::map(function(x) {
+    run_spider_model(
+      run = "short",
+      treatment = x,
+      mix = mixture_spider,
+      src = source_spider,
+      discr = TEF_spider
+    )
+  })
 
 ##########Read in pre-run saved spider models ############
 spider_models = readRDS("rds_data/spider/spider_model.rds")

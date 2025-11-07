@@ -61,7 +61,7 @@ priors$k <- 2
 priors$tau.mu <- 1.0E-3
 
 
-
+###########run the model##############
 
 ellipses_s <- siberMVN(siber_ob_s, parms, priors) #run the model
 ellipses_m <- siberMVN(siber_ob_m, parms, priors)
@@ -71,11 +71,12 @@ ellipses_m <- siberMVN(siber_ob_m, parms, priors)
 SEA_B_s <- siberEllipses(ellipses_s)
 SEA_B_m <- siberEllipses(ellipses_m)
 
+####### Re-order the columns #####
 
 SEA_B_s <- SEA_B_s[, c(4, 3, 2, 1)]
 SEA_B_m <- SEA_B_m[, c(4, 3, 2, 1)] #spider order
 
-
+##Normalized niche Bayesian Stable Isotope Ellipse Area (SEA_b)
 SEA_B_norm = SEA_B_m/SEA_B_s
 
 ###################
@@ -91,7 +92,7 @@ my_clrs <- matrix(c("#08306b", "#6baed6", "#deebf7",  # Column 1: Light to Dark
 
 # To save the figure ------------------------------------------------------
 
-####Estimate the probability of mean differences between treatment and conttrol######
+####Estimate the probability of mean differences between treatment and control######
 SEA_B_norm[,1]
 
 diff_A <-  SEA_B_norm[,2] - SEA_B_norm[,1]
