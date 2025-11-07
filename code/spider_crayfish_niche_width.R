@@ -79,7 +79,7 @@ SEA_B_m <- SEA_B_m[, c(4, 3, 2, 1)] #spider order
 ##Normalized niche Bayesian Stable Isotope Ellipse Area (SEA_b)
 SEA_B_norm = SEA_B_m/SEA_B_s
 
-###################
+############color matrix for plotting##############
 my_clrs <- matrix(c("#08306b", "#6baed6", "#deebf7",  # Column 1: Light to Dark
                     "#08306b", "#6baed6", "#deebf7",  # Column 2: Light to Dark
                     "#08306b", "#6baed6", "#deebf7",  # Column 3: Light to Dark
@@ -87,10 +87,6 @@ my_clrs <- matrix(c("#08306b", "#6baed6", "#deebf7",  # Column 1: Light to Dark
                   nrow = 3, ncol = 4)
 
 
-
-#"#1f78b4", "#ff7f00", "#33a02c"
-
-# To save the figure ------------------------------------------------------
 
 ####Estimate the probability of mean differences between treatment and control######
 SEA_B_norm[,1]

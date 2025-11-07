@@ -247,9 +247,9 @@ con_long = sp_wide %>%
   mutate(
     ALAN_Control = `ALAN` - `Control`,
     Crayfish_Control = `Crayfish` - `Control`,
-    ALANCray_Control = `ALAN + Crayfish` - `Control`,
-    ALANCray_ALAN = `ALAN + Crayfish` - `ALAN`,
-    ALANCray_Crayfish = `ALAN + Crayfish` - `Crayfish`
+    `ALAN + Crayfish_Control` = `ALAN + Crayfish` - `Control`,
+    `ALAN + Crayfish_ALAN` = `ALAN + Crayfish` - `ALAN`,
+    `ALAN + Crayfish_Crayfish` = `ALAN + Crayfish` - `Crayfish`
   ) %>%
   select(iter, name, ends_with("_Control"), ends_with("_ALAN"), ends_with("_Crayfish")) %>%
   pivot_longer(
@@ -262,9 +262,9 @@ con_long = sp_wide %>%
 
 dat_con = data.frame(
   contrast = c(
-    "ALANCray - Crayfish",
-    "ALANCray - ALAN",
-    "ALANCray - Control",
+    "ALAN + Crayfish - Crayfish",
+    "ALAN + Crayfish - ALAN",
+    "ALAN + Crayfish - Control",
     "Crayfish - Control",
     "ALAN - Control"),
   BF = c(0.31,0.50,1.87,11.1,6.71)
@@ -276,9 +276,9 @@ con_long$contrast <- gsub("_", " - ", con_long$contrast)
 # Order in the plot -------------------------------------------------------
 
 d_order <- c(
-  "ALANCray - Crayfish",
-  "ALANCray - ALAN",
-  "ALANCray - Control",
+  "ALAN + Crayfish - Crayfish",
+  "ALAN + Crayfish - ALAN",
+  "ALAN + Crayfish - Control",
   "Crayfish - Control",
   "ALAN - Control")
 
@@ -309,7 +309,7 @@ con_long |>
   scale_fill_manual(values = c("#f7fbff", "#c6dbef", "#6baed6", "#2171b5", "#08306b"))+
   ggridges::theme_ridges() +
   labs(
-    x = "Estimated difference in dietary proportion (%)",
+    x = "Estimated difference in aquatic diet contribution (%)",
     y = "Treatment comparison")+
   theme_rsm() +
   theme(legend.position = "None",
