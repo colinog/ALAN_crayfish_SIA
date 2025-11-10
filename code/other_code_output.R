@@ -37,7 +37,6 @@ emerg_r |>
   scale_x_discrete(labels = c("Control", "ALAN", "Crayfish", "ALAN + Crayfish"))+
   labs(x = "Treatment",
        y = expression(bold("Emergence flux (" * ind ~ m^{-2} ~ day^{-1} * ")"))) +
-  facet_wrap(~week)+
   ggh4x::facet_wrap2(vars(week), labeller = as_labeller(em_lab))+
   theme_rsm() +
   theme(
@@ -59,6 +58,7 @@ ggsave("data/other data_output/output/emergence_flux.png",
        dpi = 600)
 
 # Statistical analysis
+# Fit a basic GLMM without autocorrelation structure
 mod1 = glmmTMB(abund_rate ~ treat * week +
                  (1|flume),
                family = Gamma(link = "log"),
@@ -72,8 +72,9 @@ Box.test(res, lag = 20, type = "Ljung-Box")
 
 # Fit the model with AR(1) correlation structure
 
-model <- glmmTMB(abund_rate ~ treat * week + (1 | flume)
-                 + ar1(week + 0 |flume),
+
+model <- glmmTMB(abund_rate ~ treat * week +
+                   (1 | flume) + ar1(week + 0 |flume),
                  #ziformula = ~1,
                  dispformula = ~week,
                  data = emerg_r,
@@ -241,3 +242,4 @@ env_para |>
 
 ####### Save the Figure S2######
 ggsave("data/other data_output/output/env_para_plot.png", width = 13, height = 9, units = "in", dpi = 600)
+
