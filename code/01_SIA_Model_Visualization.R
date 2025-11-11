@@ -368,7 +368,7 @@ crayfish_ <- source_crayfish_tef_corrected %>%
   dplyr::rename(Taxa = Family) %>%
   dplyr::filter(!Treatment %in% c("Control", "ALAN")) |> 
   dplyr::mutate(Treatment = factor(Treatment, levels = c( "Control","ALAN", "Crayfish", "ALAN + Crayfish"))) |> 
-  dplyr::mutate(Taxa = factor(Taxa, levels = c("Ephemeroptera", "Simuliidae", "Chironomidae", "Gammaridae"))) |> 
+  dplyr::mutate(Taxa = factor(Taxa, levels = c("Chironomidae", "Gammaridae", "Simuliidae","Ephemeroptera"))) |> 
   dplyr::group_by(Treatment,Flume, Taxa) |>
   dplyr::summarise(
     d13C = mean(d13C, na.rm = TRUE),
@@ -502,10 +502,10 @@ plt_diet_crayfish_full <-
   ggplot(aes(x = value, fill = name, color = name)) +
   geom_density(alpha = 0.8) +
   coord_cartesian(xlim = c(0, 1)) +
-  scale_color_manual(values = unname(col_src_crayfish)[c(1,4,2,3)], guide = "legend", name = "Taxa",
-                     limits = c("Ephemeroptera", "Simuliidae", "Chiro&Gamm")) +
-  scale_fill_manual(values = unname(col_src_crayfish)[c(1,4,2,3)], guide = "legend", name = "Taxa",
-                    limits = c("Ephemeroptera", "Simuliidae", "Chiro&Gamm")) +
+  scale_color_manual(values = unname(col_src_crayfish)[c(2,4,1)], guide = "legend", name = "Taxa",
+                     limits = c("Chiro&Gamm","Simuliidae","Ephemeroptera")) +
+  scale_fill_manual(values = unname(col_src_crayfish)[c(2,4,1)], guide = "legend", name = "Taxa",
+                    limits = c("Chiro&Gamm","Simuliidae","Ephemeroptera")) +
   scale_x_continuous(breaks = 0:4/4, labels = scales::percent_format()) +
   ggh4x::facet_nested(Treat~1) +
   labs(y = NULL, x = expression(bold("Dietary proportion"))) +
@@ -527,7 +527,7 @@ plt_diet_crayfish_full <-
 ######The cr_p code is in the crayfish isotopic niche width script ##########
 
 ggsave(
-  "output/crayfish/crayfish_poly_prop_niche.jpeg",
+  "output/crayfish/crayfish_poly_prop_niche.png",
   (crayfish_ | plt_diet_crayfish_full) / (cr_p) +
     patchwork::plot_annotation(
       tag_levels = 'a',
