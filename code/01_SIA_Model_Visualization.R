@@ -295,7 +295,7 @@ MAP_fun <- function(x) {
 con_long |> 
   ggplot(aes(x = (diff*100), y = contrast, fill = contrast)) +
   ggridges::geom_density_ridges(scale = 1.0, alpha = 0.7) +
-  #geom_vline(xintercept = 0, linetype = "dashed", color = "gray40") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.7) +
   stat_summary(fun = MAP_fun, geom = "point", color = "black", size = 2) +
   geom_text(
     data = dat_con,  # still use small summary frame

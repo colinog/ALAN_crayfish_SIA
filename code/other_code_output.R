@@ -27,13 +27,15 @@ emerg_r |>
     treat == "control" & week == "Week 1" ~ "a",  # Assign 'a' to Control group in Family 2
     treat == "control" & week == "Week 4" ~ "a",  # Assign 'b' to Treated group in Family 2
     treat == "alan+cray" & week == "Week 1" ~ "b",
+    treat == "alan+cray" & week == "Week 4" ~ "b",
+    treat == "cray" & week == "Week 1" ~ "b",
     treat == "cray" & week == "Week 4" ~ "b",
     TRUE ~ ""
   )) |>
   ggplot(aes(x = treat, y = mean)) +
   geom_point(size = 1.5) +  # Add points
   geom_errorbar(aes(ymin = mean - se, ymax = mean + se), width = 0.1) +  # Error bars
-  geom_text(aes(label = letter, y = mean + se+3.5), size = 5, color = "black")+
+  geom_text(aes(label = letter, y = mean + se+3.3), size = 5, color = "black")+
   scale_x_discrete(labels = c("Control", "ALAN", "Crayfish", "ALAN + Crayfish"))+
   labs(x = "Treatment",
        y = expression(bold("Emergence flux (" * ind ~ m^{-2} ~ day^{-1} * ")"))) +
@@ -59,7 +61,7 @@ ggsave("data/other data_output/output/emergence_flux.png",
 
 # Statistical analysis
 # Fit a basic GLMM without autocorrelation structure
-mod1 = glmmTMB(abund_rate ~ treat * week +
+mod1 = glmmTMB(abund_rate ~ treat + week +
                  (1|flume),
                family = Gamma(link = "log"),
                data = emerg_r)
@@ -72,8 +74,7 @@ Box.test(res, lag = 20, type = "Ljung-Box")
 
 # Fit the model with AR(1) correlation structure
 
-
-model <- glmmTMB(abund_rate ~ treat * week +
+model <- glmmTMB(abund_rate ~ treat + week +
                    (1 | flume) + ar1(week + 0 |flume),
                  #ziformula = ~1,
                  dispformula = ~week,
@@ -92,13 +93,14 @@ testDispersion(simulationOutput)
 ####test for interaction####
 Anova(model, type = 2)
 # Post-hoc tests
-e_results <- emmeans(model, ~ treat * week,
+e_results <- emmeans(model, ~ treat + week,
                      adjust = "bonferroni")
 summary(e_results)
 
 result = contrast(e_results, method = "pairwise", by = "week", adjust = "bonferroni")
+result
 # Plotting the results
-openxlsx::write.xlsx(result, "data/Emergence/Emmean_output/emerg_emm.xlsx")
+openxlsx::write.xlsx(result, "data/other data_output/output/emerg_emm.xlsx")
 
 ########Macroinverbrate as crayfish potential food source##########
 
