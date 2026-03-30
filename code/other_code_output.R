@@ -9,6 +9,7 @@ library(glmmTMB)
 library(DHARMa)
 library(emmeans)
 library(car)
+library(openxlsx)
 
 ########Read in the emergence data##########
 
@@ -57,7 +58,7 @@ ggsave("data/other data_output/output/emergence_flux.png",
        height = 5,
        width = 7,
        units = "in",
-       dpi = 600)
+       dpi = 300)
 
 # Statistical analysis
 # Fit a basic GLMM without autocorrelation structure
@@ -90,17 +91,20 @@ testDispersion(simulationOutput)
 # Test for zero-inflation
 #testZeroInflation(simulationOutput)
 
-####test for interaction####
+####Test for interaction (Table S1)####
 Anova(model, type = 2)
-# Post-hoc tests
+
+# Post-hoc tests for treatment effects within each week (Table S2)
 e_results <- emmeans(model, ~ treat + week,
                      adjust = "bonferroni")
 summary(e_results)
 
 result = contrast(e_results, method = "pairwise", by = "week", adjust = "bonferroni")
 result
-# Plotting the results
-openxlsx::write.xlsx(result, "data/other data_output/output/emerg_emm.xlsx")
+
+######### Save the emmeans results for emergence flux analysis (Table S2) ##########
+
+#openxlsx::write.xlsx(result, "data/other data_output/output/data/emerg_emm.xlsx")
 
 ########Macroinverbrate as crayfish potential food source##########
 
@@ -110,7 +114,7 @@ t_clrs = c("#E69F00", "#0072B2", "#009E73", "#D55E00")
 
 labels = c("week0" = "Week 0 (before treatment)", "week6" = "Week 6 (end of treatment)")
 
-####Plot the crayfish potential food source taxa abundance####
+####Plot the crayfish potential food source taxa abundance (Figure S3)####
 
 mzb_taxa |>
   dplyr::filter(!taxa %in% c("Other", "Trichoptera")) |> 
@@ -142,14 +146,14 @@ mzb_taxa |>
 ####### Save the Figure S3 ######
 ggsave("data/other data_output/output/mzb_source_taxa.png",
        height = 6, width = 8,
-       dpi = 600, 
+       dpi = 300, 
        units = "in")
 
 
 ######### Light intensity plot Figure S1#########
 light_int = readRDS("data/other data_output/light_intensity.rds")
 
-######### Plot light intensity timeseries #########
+######### Plot light intensity timeseries (Figure S1) #########
 
 light_int |>
   dplyr::group_by(date, day_night, Treatment) %>%
@@ -181,6 +185,7 @@ ggsave(
   "data/other data_output/output/light_intensity.png",
   height = 12,
   width = 16.5,
+  dpi = 300,
   units = "cm"
 )
 
@@ -194,16 +199,16 @@ env_para = readRDS("data/other data_output/env_para.rds")
 ######Colors for each treatment#########
 my_pal <- c(
   "#0072B2",  # blue
-  "#D55E00",  # vermillion (red-orange)
+  "#D55E00",  # red-orange
   "#009E73",  # bluish green
-  "#000000"   # orange (safe orange, not yellow)
+  "#000000"   # black
 )
 
 ###########Labels#########
 f_lab = c("DOM" = "Dissolved Oxgen (% active saturation)", "pH" = "pH", "Temp" =  "Temperature (\u00B0C)",
           "Day" = "Daytime", "Night" = "Nighttime")
 
-######### Plot environmental parameters timeseries #########
+######### Plot environmental parameters timeseries (Figure S2) #########
 env_para |> 
   dplyr::select(Flume,Treatment,date, time, hour,DOM, Temp, pH) |> 
   pivot_longer(6:8,
@@ -243,5 +248,134 @@ env_para |>
   )
 
 ####### Save the Figure S2######
-ggsave("data/other data_output/output/env_para_plot.png", width = 13, height = 9, units = "in", dpi = 600)
+ggsave("data/other data_output/output/env_para_plot.png", 
+       width = 13, 
+       height = 9, 
+       units = "in", 
+       dpi = 300)
+
+#############Flume flow velocity data analysis##############
+flow_vel = readRDS("data/other data_output/flow_velocity.rds") |>
+  dplyr::rename(distance_m = `Distance(m)` , 
+                velocity_cm_s = `Velocity(cm/s)`) |>
+  dplyr::summarise(mean_vel = mean(velocity_cm_s),
+                   sd_vel = sd(velocity_cm_s))
+
+print(flow_vel)
+
+##############Crayfish mortality analysis (Table S4)##############
+cray_mort = readRDS("data/other data_output/cray_mortality.rds") |> 
+  dplyr::mutate(mortality_per = (died/initial)*100) |>
+  dplyr::mutate(treatment = factor(treatment, 
+                                   levels = c("cray", "alan+cray"))) |> 
+  dplyr::mutate(sex = factor(sex, levels = c("f", "m")))
+
+
+##########Summary statistics for crayfish mortality (Table S4)##########
+cray_mort |>
+  dplyr::group_by(treatment) |>
+  dplyr::summarise(n = n(),
+    mean_mort = mean(mortality_per),
+    sd_mort = sd(mortality_per),
+    se_mort = sd_mort/sqrt(n))
+
+########Create a summary table for crayfish survival and mortality data (Table S4)##########
+mort_tab = cray_mort |>
+  dplyr::select(treatment, flume, sex, initial, survived, died, mortality_per) |> 
+  dplyr::arrange(treatment, flume)
+
+####### Save the crayfish survival and mortality data (Table S4) ######
+#openxlsx::write.xlsx(mort_tab, "data/other data_output/output/data/cray_surv_mort_data.xlsx")
+
+# Statistical analysis of crayfish mortality
+
+######Fitted GLMM model for crayfish mortality######
+
+mod_surv = glmmTMB(cbind(died, survived) ~ treatment + sex + (1|flume), 
+                   family = binomial,
+                   data = cray_surv)
+summary(mod_surv)
+# Check model diagnostics
+simulationOutput <- simulateResiduals(fittedModel = mod_surv, n = 1000)
+plot(simulationOutput)                                      
+# Test for overdispersion
+testDispersion(simulationOutput)
+# Test for zero-inflation
+testZeroInflation(simulationOutput)
+# ANOVA results for crayfish mortality (Table S5)
+Anova(mod_surv, type = 2)
+
+################Other emerging aquatic insects data analysis (Table S3)##############
+
+emerg_other = readRDS("data/other data_output/other_emergence.rds")
+
+emerg_dat = emerg_other |>
+  dplyr::group_by(treat, week, taxa) |>
+  rstatix::get_summary_stats(abund_rate, type = "mean_sd") |> 
+  dplyr::arrange(treat, week, taxa)
+
+
+######## Save the other emerging aquatic insects data (Table S3) ##########
+#openxlsx::write.xlsx(emerg_dat, "data/other data_output/data/other_emergence_data.xlsx")
+
+
+#########Crayfish activity data analysis##########
+cray_activity = readRDS("data/other data_output/crayfish_activity.rds")
+
+cray_act = cray_activity |>
+  #dplyr::select(-Total) |> 
+  pivot_longer(cols = c("Hidden", "Active"),
+               names_to = "Activity",
+               values_to = "Count")
+
+######### Plot crayfish activity timeseries (Figure S4) #########
+
+cray_act |>
+  ggplot(aes(x = Time,
+             y = Count,
+             color = Activity,
+             group = interaction(Treatment, Activity),
+             linetype = Treatment, shape = Treatment)) +
+  stat_summary(fun = mean, geom = "line", linewidth = 0.5, alpha = 0.6,
+               position = position_dodge(width = 0.3)) +
+  stat_summary(fun = mean, geom = "point", size = 3,
+               position = position_dodge(width = 0.3)) +
+  stat_summary(fun.data = mean_cl_boot,
+               #fun.args = list(mult = 1),
+               geom = "errorbar", width = 0.2,
+               position = position_dodge(width = 0.3)) +
+  scale_shape_manual(values = c(16, 17)) +
+  scale_color_manual(values = c("#009E73",
+                     "#000000"))+
+  #facet_wrap(~ Activity) +
+  labs(y = "Mean activity count",
+       x = "Experiment week")+
+  theme_rsm() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, face = "bold", size = 12),
+    legend.position = "bottom",
+    strip.background = element_rect(fill = "grey80", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1.5),
+    strip.text = element_text(face = "bold", size = 12),
+    axis.text.y = element_text(face = "bold", size = 12),
+    axis.title.x = element_text(face = "bold", size = 12),
+    axis.line = element_line(color = "black"),
+    strip.placement = "outside",
+    axis.title.y = element_text(size = 12, color = "black", face = "bold"),
+    strip.text.x = element_text(face = "bold", size = 12),
+    legend.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 11, color = "black")
+  )
+
+####### Save the Crayfish activity Figure S4##########
+ggsave("emerg_d/crayfish_activity.png",
+       height = 5, width = 7,
+       dpi = 300,
+       units = "in")
+
+
+
+
+
+
 

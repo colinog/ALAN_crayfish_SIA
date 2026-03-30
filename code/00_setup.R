@@ -1,7 +1,6 @@
 ################################################################
 # Setup script for the manuscript:
-# Effects of artificial light at night and invasive crayfish in 
-# linked aquatic-terrestrial ecosystems
+# Artificial light at night and invasive signal crayfish alter aquatic-terrestrial food webs
 ################################################################
 
 # Load libraries required ----------------------------------------------------------
@@ -9,7 +8,6 @@ library(tidyverse)
 library(Hmisc)
 library(ggstance)
 library(MixSIAR)
-#library(tRophicPosition)
 library(SIBER)
 library(ggthemes)
 library(ggh4x)
@@ -18,17 +16,15 @@ library(patchwork)
 library(bayestestR)
 library(ggplotify)
 
-# to install tRophicPosition (currently not possible via CRAN)
-#install.packages("devtools")
-#devtools::install_github("clquezada/tRophicPosition", build_vignettes = TRUE)
 
+########Define colors for sources in spider polygon plot --------------------------
  col_src_spider <- c(
    Chironomidae = "#4f6a8f",
    Tanypodinae = "#3197bc",
    Cicadellidae = "#3E9C94",
    Curculionidae = "#7A9E24")
  
-########Define colors and themes ----------------------------------------------------------
+########Define colors and themes for spider and crayfish diet plot -------------------
 col_hab = c(
   Chironomidae = "#56B1F7",
   Tanypodinae = "#56B1F7",

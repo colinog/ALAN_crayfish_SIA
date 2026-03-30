@@ -9,7 +9,6 @@ mix_sample = bind_rows(mixture_spider) |>
   mutate(across(Treatment, ~factor(.x, levels = c("Control", "ALAN", "Crayfish", "ALAN + Crayfish"))))
 
 
-
 siber_source <- subset(source_sample, 
                        Treatment == "Control" | 
                          Treatment == "ALAN" |
@@ -107,8 +106,7 @@ BF_AC <- prob_AC/(1-prob_AC)
 
 sp_pt =ggplotify::as.ggplot(~siberDensityPlot(SEA_B_norm *100, 
                                    xlab = expression(bold("Treatment")),
-                                   ylab = expression(bold("Standard ellipse area (%)")),
-                                   #ylab = expression(bold("Standard ellipse area " ('\u2030' ^2) )),
+                                   ylab = expression(bold("Normalized Standard ellipse area (%)")),
                                    ylab.line = 2.7,
                                    #font.axis = 2,
                                    bty = "L",
@@ -117,7 +115,6 @@ sp_pt =ggplotify::as.ggplot(~siberDensityPlot(SEA_B_norm *100,
                                    ct = "mean",
                                    clr = my_clrs,
                                    scl = 1,
-                                   #xticklabels = c("Crayfish","ALAN + Crayfish"), #Crayfish
                                    xticklabels = c("Control","ALAN","Crayfish","ALAN + Crayfish"), 
                                    #main = "SIBER ellipses of each Treatment"
                                    prn = TRUE,
@@ -126,13 +123,13 @@ sp_pt =ggplotify::as.ggplot(~siberDensityPlot(SEA_B_norm *100,
   points(1:ncol(SEA_B_norm*100), group_norm[3,]*100, col="red", pch = "x", lwd = 2))
 
 # Save the figure (Figure 3) ---------------------------------------------------------
-ggsave("col_output/spider_SEA.png",
+ggsave("output/spider/spider_SEA.png",
        plot = sp_pt,
        bg = "white",
        width = 6,
        height = 5,
        units = "in",
-       dpi = 600)
+       dpi = 300)
 
 ############################################################################
 
@@ -196,9 +193,6 @@ priors$R <- 1 * diag(2)
 priors$k <- 2
 priors$tau.mu <- 1.0E-3
 
-
-
-
 ellipses_sc <- siberMVN(siber_ob_sc, parms, priors) #run the model
 ellipses_mc <- siberMVN(siber_ob_mc, parms, priors)
 
@@ -239,8 +233,7 @@ prob_AC <- mean(diff_AC > 0)
 
 cr_p = as.ggplot(~siberDensityPlot(SEA_B_normc*100, 
                                    xlab = expression(bold("Treatment")),
-                                   ylab = expression(bold("Standard Ellipse Area (%)")),
-                                   #ylab = expression(bold("Standard ellipse area " ('\u2030' ^2) )),
+                                   ylab = expression(bold("Normalized Standard Ellipse Area (%)")),
                                    ylab.line = 2.6,
                                    #font.axis = 2,
                                    bty = "L",
@@ -249,10 +242,11 @@ cr_p = as.ggplot(~siberDensityPlot(SEA_B_normc*100,
                                    ct = "mean",
                                    clr = mc_clrs,
                                    scl = 1,
-                                   #xticklabels = c("Crayfish","ALAN + Crayfish"), #Crayfish
                                    xticklabels = c("No ALAN","ALAN"), 
                                    #main = "SIBER ellipses of each Treatment"
                                    prn = TRUE,
                                    probs = probs
 )+
   points(1:ncol(SEA_B_normc*100), group_normc[3,]*100, col="red", pch = "x", lwd = 2))
+
+#########The figure is combined in Figure 6 with crayfish mixing polygon and diet proportion plot#########

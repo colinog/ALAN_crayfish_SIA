@@ -44,19 +44,68 @@ plt_tet = source_spider_tef_corrected %>%
   dplyr::mutate(Treatment = factor(Treatment, levels = c( "Control","ALAN", "Crayfish", "ALAN + Crayfish"))) |> 
   dplyr::group_by(Treatment,Flume, Taxa) |>
   dplyr::summarise(
-    d13C = mean(d13C, na.rm = TRUE),
-    d15N = mean(d15N, na.rm = TRUE), .groups = "drop"
+    n = n(),
+    avgd13C = mean(d13C, na.rm = TRUE),
+    SDd13C = sd(d13C, na.rm = TRUE),
+    avgd15N = mean(d15N, na.rm = TRUE),
+    SDd15N = sd(d15N, na.rm = TRUE),
+    .groups = "drop"
   ) |>
-  ggplot(aes(x = d13C, y = d15N, color = Taxa, fill = Taxa)) +
+  ggplot(aes(x = avgd13C, y = avgd15N, color = Taxa, fill = Taxa)) +
   ggpubr::stat_chull(
     geom = "polygon",
     color = "transparent",
     fill = "#000000",
     alpha = 0.15
   ) +
+  geom_errorbar(aes(ymin = avgd15N - SDd15N,
+                    ymax = avgd15N + SDd15N), width = 0.06, alpha = 0.6, linewidth = 0.5)+
+  geom_errorbarh(aes(xmin = avgd13C - SDd13C,
+                     xmax = avgd13C + SDd13C), 
+                 width = 0.06, alpha = 0.6, size = 0.5)+
+
   geom_point(
-    size = 1.5,
-    alpha = 0.8
+    size = 0.6,
+    alpha = 1
+  ) +
+  geom_errorbar(
+    aes(ymin = avgd15N - SDd15N, ymax = avgd15N + SDd15N),
+    width = 0.06,
+    alpha = 1,
+    data = mixture_spider %>%
+      dplyr::rename(Taxa = Family) %>%
+      dplyr::mutate(Treatment = factor(Treatment, levels = c("Control","ALAN","Crayfish","ALAN + Crayfish"))) %>% 
+      dplyr::group_by(Treatment, Flume, Taxa) %>% 
+      dplyr::summarise(
+        avgd13C = mean(d13C, na.rm = TRUE),
+        SDd13C = sd(d13C, na.rm = TRUE),
+        avgd15N = mean(d15N, na.rm = TRUE),
+        SDd15N = sd(d15N, na.rm = TRUE),
+        .groups = "drop"
+      ) %>% 
+      dplyr::mutate(flume_nr = readr::parse_number(Flume)) %>%
+      dplyr::group_by(Treatment) %>%
+      dplyr::mutate(flume_nr = as.numeric(factor(flume_nr)))
+  ) +
+  geom_errorbarh(
+    aes(xmin = avgd13C - SDd13C, xmax = avgd13C + SDd13C),
+    width = 0.06,
+    alpha = 1,
+    data = mixture_spider %>%
+      dplyr::rename(Taxa = Family) %>%
+      dplyr::mutate(Treatment = factor(Treatment, levels = c("Control","ALAN","Crayfish","ALAN + Crayfish"))) %>% 
+      dplyr::group_by(Treatment, Flume, Taxa) %>% 
+      dplyr::summarise(
+        n = n(),
+        avgd13C = mean(d13C, na.rm = TRUE),
+        SDd13C = sd(d13C, na.rm = TRUE),
+        avgd15N = mean(d15N, na.rm = TRUE),
+        SDd15N = sd(d15N, na.rm = TRUE),
+        .groups = "drop"
+      ) %>% 
+      dplyr::mutate(flume_nr = readr::parse_number(Flume)) %>%
+      dplyr::group_by(Treatment) %>%
+      dplyr::mutate(flume_nr = as.numeric(factor(flume_nr)))
   ) +
   geom_point(
     data = mixture_spider %>%
@@ -64,15 +113,18 @@ plt_tet = source_spider_tef_corrected %>%
       dplyr::mutate(Treatment = factor(Treatment, levels = c( "Control","ALAN", "Crayfish", "ALAN + Crayfish"))) |> 
       dplyr::group_by(Treatment,Flume, Taxa) |> 
       dplyr::summarise(
-        d13C = mean(d13C, na.rm = TRUE),
-        d15N = mean(d15N, na.rm = TRUE), .groups = "drop") |> 
+        avgd13C = mean(d13C, na.rm = TRUE),
+        SDd13C = sd(d13C, na.rm = TRUE),
+        avgd15N = mean(d15N, na.rm = TRUE),
+        SDd15N = sd(d15N, na.rm = TRUE),
+        .groups = "drop") |> 
       dplyr::mutate(flume_nr = readr::parse_number(Flume)) %>%
       dplyr::group_by(Treatment) %>%
       dplyr::mutate(flume_nr = as.numeric(factor(flume_nr))),
     color = "#000000",
-    fill = "transparent",
-    size = 2,
-    alpha = 0.6
+    fill = "#000000",
+    size = 0.9,
+    alpha = 1
   ) +
   scale_color_manual(values = col_src_spider, breaks = names(col_src_spider)) +
   scale_fill_manual(values = col_src_spider, breaks = names(col_src_spider)) +
@@ -95,27 +147,31 @@ plt_tet = source_spider_tef_corrected %>%
     legend.key.size = unit(0.5,"line"),
   )
 
+
+####### Save spider isotope polygon plot -------------
+
 ggsave(
   "output/spider/spider_polygon.png",
   plt_tet,
-  height = 12,
-  width = 16.5,
-  units = "cm"
+  height = 8,
+  width = 6,
+  units = "in",
+  dpi = 300
 )
 
 ##### Run MixSIAR for spider --------
-set.seed(123)
-spider_models <-
-  unique(mixture_spider$Treatment) %>%
-  purrr::map(function(x) {
-    run_spider_model(
-      run = "short",
-      treatment = x,
-      mix = mixture_spider,
-      src = source_spider,
-      discr = TEF_spider
-    )
-  })
+# set.seed(123)
+# spider_models <-
+#   unique(mixture_spider$Treatment) %>%
+#   purrr::map(function(x) {
+#     run_spider_model(
+#       run = "short",
+#       treatment = x,
+#       mix = mixture_spider,
+#       src = source_spider,
+#       discr = TEF_spider
+#     )
+#   })
 
 ##########Read in pre-run saved spider models ############
 spider_models = readRDS("rds_data/spider/spider_model.rds")
@@ -139,6 +195,7 @@ spider_models %>%
         plt_temp,
         height = 10,
         width = 16.5,
+        dpi = 300,
         units = "cm"
       )
     }
@@ -166,7 +223,7 @@ plt_diet_spider <-
   dplyr::summarise(value = mean(value), .groups = "drop") %>%
   ggplot(aes(x = value, fill = name,  color = name)) +
   geom_density(alpha = 0.5) +
-  coord_cartesian(xlim = c(0, 1)) +
+  #coord_cartesian(xlim = c(0, 1)) +
   scale_fill_manual(values = unname(col_hab)[c(4, 2)], guide = "legend", name = "Habitat",
                     limits = c("Terrestrial", "Aquatic")) +
   scale_color_manual(values = unname(col_hab)[c(3, 1)], guide = "legend", name = "Habitat",
@@ -176,9 +233,11 @@ plt_diet_spider <-
     fill = guide_legend(override.aes = list(alpha = 0.5, color = NA))
   )+
   ggh4x::facet_nested(Treatment~1) +
+  #coord_fixed(ratio = 1) +
   labs(y = NULL, x = "Dietary proportion") +
   theme_rsm() +
   theme(
+    #aspect.ratio = 1/5,
     strip.text.x = element_blank(),
     axis.text.y = element_blank(),
     axis.text.x = element_text(angle = 33),
@@ -214,12 +273,37 @@ ggsave(
           plot.tag.position =  "topleft",
           plot.tag = element_text(face = "bold", size = 10)),
   height = 6,
-  width = 7,
+  width = 6,
   units = "in",
-  dpi = 600 
+  dpi = 300 
 )
 
-#####To estimate the median dietary contribution frome each source#####
+#####To estimate the maximum a posteriori (MAP) dietary contribution from each source,
+#####together with the median and 95% highest density interval (HDI) ##########
+sp_sum = dplyr::bind_rows(
+  spider_models %>%
+    purrr::map_df(~.x$draws %>% dplyr::mutate(iter = 1:n()))) %>%
+  dplyr::mutate(Aquatic = Chironomidae+Tanypodinae,
+                Terrestrial = Cicadellidae+Curculionidae) %>%
+  dplyr::select(Treatment:Terrestrial) %>%
+  tidyr::pivot_longer(-c(Treatment, iter)) %>%
+  dplyr::left_join(
+    mixture_spider %>%
+      dplyr::select(Treatment,ALAN, Crayfish) %>%
+      dplyr::distinct(),
+    by = "Treatment"
+  ) %>%
+  dplyr::group_by(Treatment, name) %>%
+  dplyr::summarise(
+    Median = median(value),
+    MAP = value[which.max(density(value)$y)], 
+    hdi_bounds = list(hdi(value, ci = 0.95)),
+    Lower95 = map_dbl(hdi_bounds, ~ .x$CI_low),
+    Upper95 = map_dbl(hdi_bounds, ~ .x$CI_high),
+    .groups = "drop") |> 
+  select(-hdi_bounds)
+
+
 
 #######The data frame in wide format ##########
 
@@ -323,7 +407,7 @@ ggsave(
   height = 5,
   width = 8,
   units = "in",
-  dpi = 600)
+  dpi = 300)
 
 
 contrasts <- sp_wide %>%
@@ -367,31 +451,80 @@ write.csv(contrasts, "col_output/spider.csv")
 crayfish_ <- source_crayfish_tef_corrected %>%
   dplyr::rename(Taxa = Family) %>%
   dplyr::filter(!Treatment %in% c("Control", "ALAN")) |> 
-  dplyr::mutate(Treatment = factor(Treatment, levels = c( "Control","ALAN", "Crayfish", "ALAN + Crayfish"))) |> 
+  dplyr::mutate(Treatment = factor(Treatment, levels = c("Crayfish", "ALAN + Crayfish"))) |> 
   dplyr::mutate(Taxa = factor(Taxa, levels = c("Chironomidae", "Gammaridae", "Simuliidae","Ephemeroptera"))) |> 
   dplyr::group_by(Treatment,Flume, Taxa) |>
   dplyr::summarise(
-    d13C = mean(d13C, na.rm = TRUE),
-    d15N = mean(d15N, na.rm = TRUE), .groups = "drop") |>
-  ggplot(aes(x = d13C, y = d15N, color = Taxa, fill = Taxa)) +
+    n = n(),
+    avgd13C = mean(d13C, na.rm = TRUE),
+    SDd13C = sd(d13C, na.rm = TRUE),
+    avgd15N = mean(d15N, na.rm = TRUE),
+    SDd15N = sd(d15N, na.rm = TRUE),
+    .groups = "drop") |>
+  ggplot(aes(x = avgd13C, y = avgd15N, color = Taxa, fill = Taxa)) +
   ggpubr::stat_chull(
     geom = "polygon",
     color = "transparent",
     fill = "#000000",
     alpha = 0.15
   ) +
+  geom_errorbar(aes(ymin = avgd15N - SDd15N,
+                    ymax = avgd15N + SDd15N), width = 0.05)+
+  geom_errorbarh(aes(xmin = avgd13C - SDd13C,
+                     xmax = avgd13C + SDd13C), width = 0.05)+
   geom_point(
     size = 2,
     alpha = 1
+  ) +
+  geom_errorbar(
+    aes(ymin = avgd15N - SDd15N, ymax = avgd15N + SDd15N),
+    width = 0.06,
+    data = mixture_crayfish %>%
+      dplyr::rename(Taxa = Family) %>%
+      dplyr::mutate(Treatment = factor(Treatment, levels = c("Control","ALAN","Crayfish","ALAN + Crayfish"))) %>% 
+      dplyr::group_by(Treatment, Flume, Taxa) %>% 
+      dplyr::summarise(
+        avgd13C = mean(d13C, na.rm = TRUE),
+        SDd13C = sd(d13C, na.rm = TRUE),
+        avgd15N = mean(d15N, na.rm = TRUE),
+        SDd15N = sd(d15N, na.rm = TRUE),
+        .groups = "drop"
+      ) %>% 
+      dplyr::mutate(flume_nr = readr::parse_number(Flume)) %>%
+      dplyr::group_by(Treatment) %>%
+      dplyr::mutate(flume_nr = as.numeric(factor(flume_nr)))
+  ) +
+  geom_errorbarh(
+    aes(xmin = avgd13C - SDd13C, xmax = avgd13C + SDd13C),
+    width = 0.06,
+    data = mixture_crayfish %>%
+      dplyr::rename(Taxa = Family) %>%
+      dplyr::mutate(Treatment = factor(Treatment, levels = c("Control","ALAN","Crayfish","ALAN + Crayfish"))) %>% 
+      dplyr::group_by(Treatment, Flume, Taxa) %>% 
+      dplyr::summarise(
+        n = n(),
+        avgd13C = mean(d13C, na.rm = TRUE),
+        SDd13C = sd(d13C, na.rm = TRUE),
+        avgd15N = mean(d15N, na.rm = TRUE),
+        SDd15N = sd(d15N, na.rm = TRUE),
+        .groups = "drop"
+      ) %>% 
+      dplyr::mutate(flume_nr = readr::parse_number(Flume)) %>%
+      dplyr::group_by(Treatment) %>%
+      dplyr::mutate(flume_nr = as.numeric(factor(flume_nr)))
   ) +
   geom_point(
     data = mixture_crayfish %>%
       dplyr::rename(Taxa = Family) %>%
       dplyr::mutate(Treatment = factor(Treatment, levels = c("Control","ALAN", "Crayfish", "ALAN + Crayfish"))) |> 
-      dplyr::group_by(Treatment,Flume, Taxa) |>
+      dplyr::group_by(Treatment, Flume) |>
       dplyr::summarise(
-        d13C = mean(d13C, na.rm = TRUE),
-        d15N = mean(d15N, na.rm = TRUE), .groups = "drop") |>
+        n = n(),
+        avgd13C = mean(d13C, na.rm = TRUE),
+        SDd13C = sd(d13C, na.rm = TRUE),
+        avgd15N = mean(d15N, na.rm = TRUE),
+        SDd15N = sd(d15N, na.rm = TRUE),
+        .groups = "drop") |>
       dplyr::mutate(flume_nr = readr::parse_number(Flume))%>%
       dplyr::group_by(Treatment) %>%
       dplyr::mutate(flume_nr = as.numeric(factor(flume_nr))),
@@ -425,7 +558,7 @@ ggsave(
   "output/crayfish/crayfish_.png",
   crayfish_,
   height = 12,
-  width = 16.5,
+  width = 10,
   units = "cm"
 )
 
@@ -468,6 +601,7 @@ crayfish_models %>%
         plt_temp,
         height = 10,
         width = 16.5,
+        dpi = 300,
         units = "cm"
       )
     }
@@ -544,10 +678,10 @@ ggsave(
   height = 10,
   width = 9,
   units = "in",
-  dpi = 600
+  dpi = 300
 )
 
-#####To estimate the median dietary contribution frome each source#####
+#####To estimate the median dietary contribution from each source#####
 cr_sum = dplyr::bind_rows(
   crayfish_models %>%
     purrr::map_df(~.x$draws %>% dplyr::mutate(iter = 1:n()))) %>%
