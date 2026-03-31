@@ -7,7 +7,9 @@ Bayesian mixing models and isotopic niche width estimation using carbon and nitr
 
 **Code description**
 
-The code folder include the main scripts and should be run in the following order:
+To ensure code display and runs as originally configured, download and extract the `.zip` file, then open the project by double-clicking the `ALAN_crayfish_SIA.Rproj` file in `RStudio`. Opening the `.Rproj` file will automatically set the correct working directory and project environment.
+
+The `code` folder include the main scripts and should be run in the following order:
 
 1. `00_Septup.R` - Initialize the environment, loads required packages, and run the function
 2. `01_SIA_model_visualization.R` – Prepare the data, runs the Bayesian mixing models and produces visualization 
