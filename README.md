@@ -1,6 +1,6 @@
 This repository contains the code and data used in the manuscript: 
 
-_"Effects of artificial light at night and invasive crayfish in linked aquatic-terrestrial ecosystems"_
+_"Artificial light at night and invasive signal crayfish alter aquatic-terrestrial food webs"_
 
 The repository include R function and visualization scripts adapted from `MixSIAR` and `SIBER` packages for
 Bayesian mixing models and isotopic niche width estimation using carbon and nitrogen stable isotope data.
