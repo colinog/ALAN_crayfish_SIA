@@ -2,6 +2,12 @@ This repository contains the code and data used in the manuscript:
 
 _"Artificial light at night and invasive signal crayfish alter aquatic-terrestrial food webs"_
 
+The dataset associated with this manuscript is archive in `Zenodo` and can be accessed via DOI: `https://doi.org/10.5281/zenodo.14516568`
+
+If you use this dataset, please cite it as:
+
+Ogbeide, C., Arias, M., Bollinger, E., Burgis, F., Manfrin, A., Schirmel, J., Schreiner, V. C., Bundschuh, M., & Schulz, R. (2026). Data and code supporting the manuscript: Artificial light at night and invasive signal crayfish alter aquatic-terrestrial food webs. [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.14516568
+
 The repository include R function and visualization scripts adapted from `MixSIAR` and `SIBER` packages for
 Bayesian mixing models and isotopic niche width estimation using carbon and nitrogen stable isotope data.
 
