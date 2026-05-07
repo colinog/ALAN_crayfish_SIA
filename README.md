@@ -1,6 +1,7 @@
-This repository contains the code and data used in the manuscript: 
+This repository contains the code and data used in the article: 
 
-_"Artificial light at night and invasive signal crayfish alter aquatic-terrestrial food webs"_
+_Ogbeide, C., Arias, M., Bollinger, E., Burgazzi, G., Burgis, F., Manfrin, A., Schirmel, J., Schreiner, V. C., Bundschuh, M., & Schulz, R. (2026). Artificial light at night and invasive signal crayfish alter aquatic-terrestrial food webs. Functional Ecology, 00, 1–15. `https://doi.org/10.1111/1365-2435.70335`
+_
 
 The dataset associated with this manuscript is archive in `Zenodo` and can be accessed via DOI: `https://doi.org/10.5281/zenodo.14516568`
 
